@@ -1,0 +1,38 @@
+
+name: Build Nexus Client
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Extract ZIP
+        run: unzip Nexus_Client_100_Features.zip
+
+      - name: Build
+        working-directory: nexus
+        run: |
+          gradle --no-daemon build
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nexus-Client
+          path: nexus/build/libs/*.jar
+          if-no-files-found: error
